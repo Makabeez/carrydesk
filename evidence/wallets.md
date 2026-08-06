@@ -13,7 +13,7 @@ Config: `~/.keeperhub/wallet.json`
 Holds: Tempo USDC.e
 Used for: paying listed KeeperHub workflows via x402/MPP
 First Tempo payment: execution `l5tl0rz2dvx3ff472wqfn` (tab-anchor-verifier, $0.01 USDC.e)
-Note: needs ~0.00007 ETH on Ethereum mainnet to submit ERC-8004 feedback on-chain
+Note: funded with mainnet ETH 2026-08-06; ERC-8004 feedback submitted (see below)
 
 ## ERC-8004 Feedback
 feedbackId: `ss95q72b9471pn61fpoaq`
