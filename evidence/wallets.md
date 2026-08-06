@@ -14,3 +14,10 @@ Holds: Tempo USDC.e
 Used for: paying listed KeeperHub workflows via x402/MPP
 First Tempo payment: execution `l5tl0rz2dvx3ff472wqfn` (tab-anchor-verifier, $0.01 USDC.e)
 Note: needs ~0.00007 ETH on Ethereum mainnet to submit ERC-8004 feedback on-chain
+
+## ERC-8004 Feedback
+feedbackId: `ss95q72b9471pn61fpoaq`
+txHash: `0x07e6372402a4cfb3428d32c209675bc0f32acdd0d793fd87c6d6a10978a22a75`
+Execution: `l5tl0rz2dvx3ff472wqfn` (tab-anchor-verifier, $0.01 USDC.e)
+Rating: 5 (integer, ERC-8004 ReputationRegistry, Ethereum mainnet)
+Public: https://app.keeperhub.com/api/feedback/ss95q72b9471pn61fpoaq
