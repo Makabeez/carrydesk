@@ -1,0 +1,7 @@
+Execution	np0u90v7w94d1raqolwhf
+Status	completed
+Type	transfer
+TX Hash	0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e
+TX Link	https://sepolia.etherscan.io/tx/0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e
+Created	2026-08-05T21:27:31.700Z
+Completed	2026-08-05T21:27:42.883Z

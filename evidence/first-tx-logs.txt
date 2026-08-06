@@ -1,0 +1,33 @@
+{
+  "executionId": "np0u90v7w94d1raqolwhf",
+  "status": "completed",
+  "type": "transfer",
+  "transactionHash": "0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e",
+  "transactionLink": "https://sepolia.etherscan.io/tx/0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e",
+  "sponsored": true,
+  "receipts": [
+    {
+      "hash": "0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e",
+      "chainId": 11155111,
+      "gasUsed": "74781",
+      "verified": true,
+      "verifiedAt": "2026-08-05T21:27:42.694Z",
+      "blockNumber": 11426940,
+      "receiptStatus": "success"
+    }
+  ],
+  "result": {
+    "chainId": 11155111,
+    "gasUsed": "74781",
+    "success": true,
+    "sponsored": true,
+    "gasUsedUnits": "74781",
+    "transactionHash": "0x9f3f1d146abe83fc666d0f5328b8162df987dfa55702d2e383b396903a96b02e",
+    "effectiveGasPrice": "1331266966"
+  },
+  "error": null,
+  "retryCount": 0,
+  "network": "11155111",
+  "createdAt": "2026-08-05T21:27:31.700Z",
+  "completedAt": "2026-08-05T21:27:42.883Z"
+}
