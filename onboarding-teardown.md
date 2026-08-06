@@ -4,7 +4,7 @@ Environment: Ubuntu on WSL2, x86_64, Node v24.13.0, no Homebrew, no sudo, headle
 1. Install docs are brew-first; no Linux path without reading GitHub Releases manually. **Doc fix: https://github.com/KeeperHub/cli/pull/88**
 2. `kh --version` → "unknown flag". Correct form is `kh version`.
 3. `kh auth login` documented as "opens a browser window"; actually a device-code flow. Codes expired repeatedly before I could use them on a remote/headless box. **Doc fix: https://github.com/KeeperHub/cli/pull/88**
-4. `kh wallet info` shells out to `npx @keeperhub/wallet` — undocumented Node dependency, fails with "could not determine executable to run". **Doc fix: https://github.com/KeeperHub/cli/pull/88**
+4. BUG: `kh wallet info` (and all `kh wallet` agentic subcommands) fail with "could not determine executable to run". Root cause: `@keeperhub/wallet` publishes three bins (`keeperhub-wallet`, `keeperhub-wallet-hook`, `keeperhub-wallet-mcp`) — none named `wallet`. `npx @keeperhub/wallet <subcmd>` cannot infer which to run and exits. Fix is `npx -p @keeperhub/wallet keeperhub-wallet <subcmd>`. **Fix: https://github.com/KeeperHub/cli/pull/89** (Note: #88 added a Node prerequisite note treating this as a missing dependency — that diagnosis was wrong; the dependency is documented, the binary inference is the bug.)
 5. BUG: `kh w balance` → "json: cannot unmarshal number into Go struct field ChainBalance.balances.chainId of type string". API returns chainId as number, CLI v0.13.1 expects string. Reproducible on every invocation, with and without --json/--chain. **Fix: https://github.com/KeeperHub/cli/pull/87**
 6. `/plugin marketplace add KeeperHub/claude-plugins` clones over SSH → "Permission denied (publickey)" without GitHub SSH keys. Blocks the documented Claude Code path entirely; the `/keeperhub:login` and `/keeperhub:status` slash commands never become available. **Doc fix: https://github.com/KeeperHub/claude-plugins/pull/5**
 7. BUG (silent failure): `create_workflow` over MCP silently drops node configs when they are passed at the top level — the workflow saves without error, `execute_workflow` returns `{ status: "running" }` without error, but only the trigger node fires; all action nodes are skipped. Root cause: node config must be nested inside the `data` object (`node.data.config`, `node.data.actionType`), not at the node's top level. Nothing in the API response, the execution status, or the run log indicates the config was ignored. This is a silent-success failure: every observable signal says it worked until you check `executionTrace` and see only `["trigger-1"]`.
@@ -14,7 +14,8 @@ Environment: Ubuntu on WSL2, x86_64, Node v24.13.0, no Homebrew, no sudo, headle
 | # | Repo | Type | Status |
 |---|------|------|--------|
 | [#87](https://github.com/KeeperHub/cli/pull/87) | KeeperHub/cli | Bug fix — accept numeric `chainId` in balance/token responses | Open |
-| [#88](https://github.com/KeeperHub/cli/pull/88) | KeeperHub/cli | Docs — Linux install, device-code auth, npx prerequisite | Open |
+| [#88](https://github.com/KeeperHub/cli/pull/88) | KeeperHub/cli | Docs — Linux install, device-code auth, npx prerequisite (symptom of #89) | Open |
+| [#89](https://github.com/KeeperHub/cli/pull/89) | KeeperHub/cli | Bug fix — npx binary name inference breaks all agentic wallet subcommands | Open |
 | [#5](https://github.com/KeeperHub/claude-plugins/pull/5) | KeeperHub/claude-plugins | Docs — SSH prerequisite + MCP fallback for plugin marketplace | Open |
 
 ## Suggested fixes (remaining)
