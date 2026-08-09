@@ -1,0 +1,22 @@
+{
+  "BTC": {
+    "ema_hours": 72,
+    "entry_spread": 3,
+    "exit_spread": 0
+  },
+  "ETH": {
+    "ema_hours": 72,
+    "entry_spread": 1,
+    "exit_spread": -2
+  },
+  "SOL": {
+    "ema_hours": 72,
+    "entry_spread": 6,
+    "exit_spread": 1
+  },
+  "HYPE": {
+    "ema_hours": 72,
+    "entry_spread": 6,
+    "exit_spread": -2
+  }
+}
