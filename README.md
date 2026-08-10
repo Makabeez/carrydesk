@@ -70,7 +70,7 @@ WF-3  carrydesk-guard    (every 15 min)
 No wallet, no RPC key, no API key needed:
 
 ```bash
-git clone https://github.com/geiserjoe2/carrydesk
+git clone https://github.com/Makabeez/carrydesk
 cd carrydesk
 python3 funding_bench.py --coins BTC ETH SOL HYPE --days 90
 python3 sweep.py --coins BTC ETH SOL HYPE --days 90
