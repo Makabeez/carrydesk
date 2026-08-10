@@ -26,7 +26,7 @@ Full run logs and KeeperHub execution IDs: [`evidence/`](evidence/).
 
 Getting rotation *discipline* wrong costs 10× more than getting the *signal* wrong.
 
-![Benchmark chart: best vs worst config across BTC ETH SOL HYPE](benchmark.svg)
+![Benchmark chart: best vs worst config across BTC ETH SOL HYPE](https://raw.githubusercontent.com/Makabeez/carrydesk/main/benchmark.svg)
 
 | config | 90d PnL on $10k |
 |---|---|
