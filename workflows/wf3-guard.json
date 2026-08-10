@@ -1,0 +1,104 @@
+{
+  "name": "carrydesk-guard",
+  "description": "Safety guard for CarryDesk. Runs every 15 min. Reads sDAI (Spark) and aDAI (Aave) positions. Alerts and fires WF-2 EXIT if: (1) capital is split across both venues simultaneously, or (2) both positions are zero (capital unaccounted). Note: fire-exit uses webhook/send-webhook which cannot resolve api.keeperhub.com from within the KeeperHub execution environment (platform limitation, see onboarding-teardown.md item 12). Detection logic is confirmed working; auto-remediation requires a native workflow-invoke action.",
+  "nodes": [
+    {
+      "id": "wf3-trigger",
+      "type": "trigger",
+      "position": {"x": 0, "y": 0},
+      "data": {
+        "type": "trigger",
+        "label": "Guard Timer",
+        "config": {
+          "triggerType": "Schedule",
+          "scheduleType": "cron",
+          "cronExpression": "*/15 * * * *"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "spark-pos",
+      "type": "action",
+      "position": {"x": 252, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Spark Position",
+        "config": {
+          "account": "0x972A2E27b32152064F65a3Dda489F3899A168a37",
+          "network": "1",
+          "actionType": "spark/vault-balance"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "aave-pos",
+      "type": "action",
+      "position": {"x": 504, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Aave Position",
+        "config": {
+          "user": "0x972A2E27b32152064F65a3Dda489F3899A168a37",
+          "asset": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "network": "1",
+          "actionType": "aave-v3/get-user-reserve-data"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "guard-code",
+      "type": "action",
+      "position": {"x": 756, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Guard Check",
+        "config": {
+          "code": "const sDAI = JSON.parse('{{@spark-pos:Spark Position.result}}');\nconst aDAIRaw = JSON.parse('{{@aave-pos:Aave Position.result.currentATokenBalance}}');\n\nconst hasSpark = BigInt(sDAI || '0') > 0n;\nconst hasAave = BigInt(aDAIRaw || '0') > 0n;\n\nconst positionSplit = hasSpark && hasAave;\nconst positionMissing = !hasSpark && !hasAave;\n\nconst alert = (positionSplit || positionMissing) ? 1 : 0;\nconst reason = positionSplit\n  ? 'SPLIT: capital in both Spark and Aave simultaneously'\n  : positionMissing\n  ? 'MISSING: no position in either venue'\n  : 'ok';\n\nreturn { alert, reason, sDAI, aDAI: aDAIRaw, hasSpark, hasAave };",
+          "actionType": "code/run-code"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "alert-gate",
+      "type": "action",
+      "position": {"x": 1008, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Alert Needed?",
+        "config": {
+          "condition": "{{@guard-code:Guard Check.alert}} == 1",
+          "actionType": "Condition"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "fire-exit",
+      "type": "action",
+      "position": {"x": 1260, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Fire WF-2 EXIT",
+        "config": {
+          "actionType": "webhook/send-webhook",
+          "webhookUrl": "https://api.keeperhub.com/webhooks/np1ecn8vqmcjnteg5b76p",
+          "webhookMethod": "POST",
+          "webhookHeaders": "{\"Content-Type\": \"application/json\"}",
+          "webhookPayload": "{\"state\": \"EXIT\", \"spread\": 0, \"ema_apr\": 0, \"reference_apr\": 0, \"rotation_count_today\": 0, \"chat_id\": \"guard\"}"
+        },
+        "status": "idle"
+      }
+    }
+  ],
+  "edges": [
+    {"id": "g1", "source": "wf3-trigger", "target": "spark-pos"},
+    {"id": "g2", "source": "spark-pos", "target": "aave-pos"},
+    {"id": "g3", "source": "aave-pos", "target": "guard-code"},
+    {"id": "g4", "source": "guard-code", "target": "alert-gate"},
+    {"id": "g5", "source": "alert-gate", "target": "fire-exit", "sourceHandle": "true"}
+  ]
+}

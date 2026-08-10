@@ -102,4 +102,13 @@ Execution discipline dominates signal quality. That is the entire thesis.
 | $6 rotation cost | **ASSUMED** — parameterised via `--gas`, set from observed run costs |
 | Reference rate 4.75% APR | **ASSUMED** — parameterised via `--ssr` |
 
-Executed transactions: _(fill with KeeperHub run IDs + explorer links)_
+### Executed transactions (Ethereum mainnet, gas sponsored by KeeperHub)
+
+| date | action | tx | KeeperHub execution ID |
+|---|---|---|---|
+| 2026-08-09 | DAI approve — path validation run | [0x11ad27a6...](https://etherscan.io/tx/0x11ad27a6f4aeec8ca74358800bec3340c687d8e6769cac4913adb3e7449e6897) | `c4njod6fjhbupzk63hgtm` |
+| 2026-08-10 | sDAI deposit — 0 DAI (path validation) | [0xe17e6c20...](https://etherscan.io/tx/0xe17e6c2083ae00039199b2317a9fbeaa495ce4532c3002e6b1bff2af7dea66be) | `7qt5vm7xbnab3b2y26bfg` |
+| 2026-08-10 | DAI approve — funded run | [0xe4e30518...](https://etherscan.io/tx/0xe4e305184a8f3608d560fe17338a316dc36f8820847a81012a3e43ef011e1464) | `se5dnew9iaesqyb4xfxvi` |
+| 2026-08-10 | **sDAI deposit — 1.913 DAI** | [**0xad85906c...**](https://etherscan.io/tx/0xad85906cbcf69d6d25c3210b52eba3dc9484ccd0ead6c001ca84863c0eb699c8) | `se5dnew9iaesqyb4xfxvi` |
+
+Deposit read-back: **1.622 sDAI** shares at `0x972A2E27b32152064F65a3Dda489F3899A168a37`, confirmed by `spark/vault-balance` node immediately after the deposit tx. Position accruing yield.

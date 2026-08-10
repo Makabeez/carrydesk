@@ -1,0 +1,86 @@
+{
+  "name": "carrydesk-signal",
+  "description": "Hourly Hyperliquid funding signal: EMA-72 vs Aave V3 DAI reference rate. Emits {coin, funding_apr, ema_apr, reference_apr, spread, state} where state is ENTER/HOLD/EXIT. BTC thresholds: entry spread >3%, exit spread <0%. Published as paid x402 listing.",
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "position": {"x": 0, "y": 0},
+      "data": {
+        "type": "trigger",
+        "label": "Hourly Schedule",
+        "config": {
+          "triggerType": "Schedule",
+          "scheduleCron": "0 * * * *",
+          "scheduleTimezone": "UTC"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "ts-node",
+      "type": "action",
+      "position": {"x": 252, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Compute Start Time",
+        "config": {
+          "code": "const startTime = String(Date.now() - 72 * 3600 * 1000);\nreturn { startTime };",
+          "actionType": "code/run-code"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "funding-fetch",
+      "type": "action",
+      "position": {"x": 504, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Fetch Funding History",
+        "config": {
+          "coin": "BTC",
+          "startTime": "{{@ts-node:Compute Start Time.startTime}}",
+          "actionType": "hyperliquid/funding-history"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "ref-rate",
+      "type": "action",
+      "position": {"x": 756, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Get Reference Rate",
+        "config": {
+          "user": "0xe1dC20C4Ed70b281441FA9b8324168DF4bdC11be",
+          "asset": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "network": "1",
+          "actionType": "aave-v3/get-user-reserve-data"
+        },
+        "status": "idle"
+      }
+    },
+    {
+      "id": "signal-node",
+      "type": "action",
+      "position": {"x": 1008, "y": 0},
+      "data": {
+        "type": "action",
+        "label": "Compute Signal",
+        "config": {
+          "code": "const rows = JSON.parse('{{@funding-fetch:Fetch Funding History.data}}');\nconst liquidityRateRaw = JSON.parse('{{@ref-rate:Get Reference Rate.result.liquidityRate}}');\n\nconst HOURS_PER_YEAR = 24 * 365;\nconst RAY = 1e27;\n\nconst apr = rows.map(r => parseFloat(r.fundingRate) * HOURS_PER_YEAR * 100);\n\nconst k = 2 / 73;\nlet emaVal = apr[0];\nfor (const x of apr) { emaVal = x * k + emaVal * (1 - k); }\n\nconst reference_apr = (Number(liquidityRateRaw) / RAY) * 100;\n\nconst ENTRY_SPREAD = 3;\nconst EXIT_SPREAD = 0;\n\nconst spread = emaVal - reference_apr;\nconst state = spread > ENTRY_SPREAD ? 'ENTER' : spread < EXIT_SPREAD ? 'EXIT' : 'HOLD';\n\nreturn {\n  coin: 'BTC',\n  funding_apr: apr[apr.length - 1],\n  ema_apr: emaVal,\n  reference_apr,\n  spread,\n  state,\n  observations: rows.length,\n  timestamp: Date.now()\n};",
+          "actionType": "code/run-code"
+        },
+        "status": "idle"
+      }
+    }
+  ],
+  "edges": [
+    {"id": "e1", "source": "trigger-1", "target": "ts-node"},
+    {"id": "e2", "source": "ts-node", "target": "funding-fetch"},
+    {"id": "e3", "source": "funding-fetch", "target": "ref-rate"},
+    {"id": "e4", "source": "ref-rate", "target": "signal-node"}
+  ]
+}
